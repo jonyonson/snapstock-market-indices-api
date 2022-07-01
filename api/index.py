@@ -1,20 +1,25 @@
-
 from http.server import BaseHTTPRequestHandler
-from urllib import parse
+import json
 
 class handler(BaseHTTPRequestHandler):
 
-	def do_GET(self):
-		s = self.path
-		dic = dict(parse.parse_qsl(parse.urlsplit(s).query))
-		self.send_response(200)
-		self.send_header('Content-type','text/plain')
-		self.end_headers()
+  def _set_headers(self):
+    self.send_response(200)
+    self.send_header('Content-type', 'application/json')
+    self.end_headers()
 
-		if "name" in dic:
-			message = "Hello, " + dic["name"] + "!"
-		else:
-			message = "Hello, stranger!"
+  def do_HEAD(self):
+    self._set_headers()
 
-		self.wfile.write(message.encode())
-		return
+  def do_GET(self):
+    self._set_headers()
+
+    message = "Hello"
+
+    dow = {'change': 100, 'percentChange': 2.3234}
+    nasdaq = {'change': -100, 'percentChange': -2.3234}
+    sp500 = {'change': 232, 'percentChange': 4.3234}
+
+    json_string = json.dumps({'dow': dow, 'nasdaq': nasdaq, 'sp500': sp500})
+    self.wfile.write(json_string.encode(encoding='utf_8'))
+    return
